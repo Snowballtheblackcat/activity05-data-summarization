@@ -25,7 +25,7 @@ We read in the same data from Activity 4 below, but notice that this code is now
 Compare this code output to the `load_data` chunk in your knitted Activity 4 `.md` report.
 What does enclosing an assignment code (i.e., `object_name <- r_code`) in parentheses do?
 
-**Response**:
+**Response**:It shows the first 10 rows of the dataset, whereas that does not happen when you dont have ()
 
 
 ### Data Codebook
@@ -79,6 +79,10 @@ There are a number of ways to create a code chunk:
 Below, create a code chunk and name it `median_earnings`.
 Make sure there is an empty line above and below the code chunk.
 
+```{r median earnings}
+college_recent_grads %>% 
+  summarize(median_all_majors = median(median))
+```
 
 
 In your newly created R code chunk, verify that the median income for all majors was $36,000.
@@ -95,12 +99,24 @@ Be careful when you name your output summaries as we are dealing with things tha
 When I and obtaining numerical summaries for variables, I like to include the variable name in my summary name (e.g., `mean_med_earnings = mean(median)`).
 Create a code chunk and name it `summary_earnings`.
 
+```{r summary_earnings}
+college_recent_grads %>% 
+  summarise(
+    number_of_obs = n(),
+    mean_all_majors = mean(median),
+    sd_all_majors = sd(median),
+    min_all_majors = min(median),
+    median_all_majors = median(median),
+    max_all_majors = max(median)
+  )
+```
 
 
 Provide a discussion on what you believe the distribution of median earnings will look like.
 You should discuss the center, spread, and potential shape only using these values - I do NOT want to see any data visualizations here.
 
-**Response**:
+**Response**: I expect the center to be $36,000, with a right skewed shape. The higher incomes will taper off, while there are many more low incomes.
+
 
 
 ### Median Earnings by Major Category
@@ -110,12 +126,26 @@ Using the `college_recent_grads` dataset and functions from `{dplyr}`, obtain si
 *Arrange* this summary table by the median earning.
 Create a code chunk and name it `major_earnings`.
 
+```{r major earnings}
+college_recent_grads %>% 
+  group_by(major_category) %>% 
+  summarise(
+    number_of_obs_major = n(),
+    mean_majors = mean(median),
+    sd_majors = sd(median),
+    min_majors = min(median),
+    median_majors = median(median),
+    max_majors = max(median)
+  ) %>% 
+  arrange(median_majors) %>% 
+  knitr::kable()
+```
 
 
 Provide a discussion on how each major compares to the overall distribution.
 You should discuss the center, spread, and potential shape only using these summary values - I do NOT want to see any data visualizations here.
 
-**Response**:
+**Response**:s a general rule of thumb, STEM majors net a larger median income when compared to more humanitarian major categories. All six categories with medians higher than the overall median are STEM or corporate related degrees.
 
 
 Before we continue, add the following to the end of your pipeline (you will need to pipe first) in your `major_earnings` code chunk:
@@ -128,7 +158,95 @@ Knit your document with and without this last piped code.
 What changes about the output?
 When would this `knitr::kable` code be useful?
 
-**Response**:
+**Response**: Adding this code makes it much easier to see the output data table. It makes it look somewhat like an excel data sheet which is easier to read and gain insight from.
+
+
+![](README-img/noun_pause.png) **Planned Pause Point**: If you have any questions, contact your instructor. Otherwise feel free to continue on.
+
+### Visualize Median Earnings by Major Category
+
+Let us see how well your descriptions in the [Median Earnings by Major Category](#median-earnings-by-major-category) section compare to the actual distributions.
+Plot the distribution of the variable `median` earnings of full-time, year-round workers for each `major_category` using the *boxplot* and *jitter* geometries.
+Create a code chunk and name it `major_boxplot`.
+
+```{r major_boxplot}
+college_recent_grads %>% 
+  ggplot() +
+  geom_boxplot(aes(x=major_category, y=median))+
+  geom_jitter(aes(x=major_category, y=median))+
+  scale_x_discrete(guide = guide_axis(n.dodge=4))
+```
+
+
+Provide a discussion on how your descriptions in the Median Earnings by Major Category section compares.
+
+**Response**: Career fields with a higher median tend to have a larger range of median salaries. For the most part this visualization agrees with my previous section.
+
+
+### Multiple Rankings
+
+#### Ranking by `major_category`
+
+The current rankings provided in the data are by `major`.
+Here we will develop a series of rankings to see how the `major_category` levels perform.
+Create a code chunk and name it `category_rankings`.
+In this code chunk, 
+
+1. Group `college_recent_grads` by `major_category`
+2. Summarize the variable `total` as the *sum* across all majors (to get the total number of majors within a `major_category`) and the following variables by their *median* value: `sharewomen`, `unemployment_rate`, and `median` earnings. Provide a meaningful name to each summarized value.
+3. Assign/create a *rank* for each summarized value (rank for `total`, rank for `sharewomen`, etc.) and provide a meaningful name to each ranked column value.
+4. Arrange the results so that `major_category` appear in alphabetical order ("A" at the top).
+
+```{r category_rankings}
+college_recent_grads %>% 
+  group_by(major_category) %>% 
+  summarise(
+    total = sum(total),
+    median_sharewomen = median(sharewomen),
+    median_unemployment_rate = median(unemployment_rate),
+    median_median = median(median)
+  ) %>% 
+  mutate(ranked_total=rank(total)) %>% 
+  mutate(ranked_sharewomen = rank(median_sharewomen)) %>% 
+  mutate(ranked_unemployment_rate = rank(median_unemployment_rate)) %>% 
+  mutate(ranked_median = rank(desc(median_median))) %>% 
+  ungroup() %>% 
+  arrange(major_category)
+```
+
+
+Provide a discussion on how the `major_category` rankings compare.
+
+**Response**: STEM careers seem to have a lower share of women. While all unemployment rates are low, liberal arts type majors seem to have higher rates. There appear to be the fewest interdisciplinary majors. Engineering has the highest median income.
+
+
+![](README-img/noun_pause.png) **(Final) Planned Pause Point**: If you have any questions, contact your instructor. Otherwise feel free to continue on.
+
+
+Knit, then stage everything listed in your **Git** pane, commit (with a meaningful commit message), and push  to your GitHub repo.
+Go to GitHub and verify that your `activity04-data-pieplines.Rmd` file appears as you intended it to.
+
+You can now go back to the `README` file.
+
+
+## Attribution
+
+This activity is inspired by a lab from [Dr. Mine Çetinkaya-Rundel](http://www2.stat.duke.edu/~mc301/)'s STA 199 course.
+
+
+
+Before we continue, add the following to the end of your pipeline (you will need to pipe first) in your `major_earnings` code chunk: 
+
+```
+knitr::kable()
+```
+
+Knit your document with and without this last piped code.
+What changes about the output?
+When would this `knitr::kable` code be useful?
+
+**Response**:Adding this code makes it much easier to see the output data table. It makes it look somewhat like an excel data sheet which is easier to read and gain insight from.
+
 
 
 ![](README-img/noun_pause.png) **Planned Pause Point**: If you have any questions, contact your instructor. Otherwise feel free to continue on.
@@ -143,7 +261,7 @@ Create a code chunk and name it `major_boxplot`.
 
 Provide a discussion on how your descriptions in the Median Earnings by Major Category section compares.
 
-**Response**:
+**Response**:Career fields with a higher median tend to have a larger range of median salaries. For the most part this visualization agrees with my previous section.
 
 
 ### Multiple Rankings
@@ -164,7 +282,7 @@ In this code chunk,
 
 Provide a discussion on how the `major_category` rankings compare.
 
-**Response**:
+**Response**:Career fields with a higher median tend to have a larger range of median salaries. For the most part this visualization agrees with my previous section.
 
 
 ![](README-img/noun_pause.png) **(Final) Planned Pause Point**: If you have any questions, contact your instructor. Otherwise feel free to continue on.
