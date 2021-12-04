@@ -25,7 +25,7 @@ We read in the same data from Activity 4 below, but notice that this code is now
 Compare this code output to the `load_data` chunk in your knitted Activity 4 `.md` report.
 What does enclosing an assignment code (i.e., `object_name <- r_code`) in parentheses do?
 
-**Response**:It shows the first 10 rows of the dataset, whereas that does not happen when you dont have ()
+**Response**:The first 10 rows of the dataset is shown.
 
 
 ### Data Codebook
@@ -115,7 +115,7 @@ college_recent_grads %>%
 Provide a discussion on what you believe the distribution of median earnings will look like.
 You should discuss the center, spread, and potential shape only using these values - I do NOT want to see any data visualizations here.
 
-**Response**: I expect the center to be $36,000, with a right skewed shape. The higher incomes will taper off, while there are many more low incomes.
+**Response**:The median, or middle will be $36,000. It will also be skewed right, with more frequencies in the lower half of income earnings. 
 
 
 
@@ -145,8 +145,7 @@ college_recent_grads %>%
 Provide a discussion on how each major compares to the overall distribution.
 You should discuss the center, spread, and potential shape only using these summary values - I do NOT want to see any data visualizations here.
 
-**Response**:s a general rule of thumb, STEM majors net a larger median income when compared to more humanitarian major categories. All six categories with medians higher than the overall median are STEM or corporate related degrees.
-
+**Response**: STEM majors will have a higher median income than other majors. 
 
 Before we continue, add the following to the end of your pipeline (you will need to pipe first) in your `major_earnings` code chunk:
 
@@ -158,7 +157,7 @@ Knit your document with and without this last piped code.
 What changes about the output?
 When would this `knitr::kable` code be useful?
 
-**Response**: Adding this code makes it much easier to see the output data table. It makes it look somewhat like an excel data sheet which is easier to read and gain insight from.
+**Response**: The code outputs a data table which is easy to read. 
 
 
 ![](README-img/noun_pause.png) **Planned Pause Point**: If you have any questions, contact your instructor. Otherwise feel free to continue on.
@@ -180,7 +179,7 @@ college_recent_grads %>%
 
 Provide a discussion on how your descriptions in the Median Earnings by Major Category section compares.
 
-**Response**: Career fields with a higher median tend to have a larger range of median salaries. For the most part this visualization agrees with my previous section.
+**Response**: Majors with a higher median also have a large rage of median salaries.
 
 
 ### Multiple Rankings
@@ -217,7 +216,7 @@ college_recent_grads %>%
 
 Provide a discussion on how the `major_category` rankings compare.
 
-**Response**: STEM careers seem to have a lower share of women. While all unemployment rates are low, liberal arts type majors seem to have higher rates. There appear to be the fewest interdisciplinary majors. Engineering has the highest median income.
+**Response**: There are less women that choose stem majors. Unemployment rates are higher in more liberal majors. 
 
 
 ![](README-img/noun_pause.png) **(Final) Planned Pause Point**: If you have any questions, contact your instructor. Otherwise feel free to continue on.
@@ -245,7 +244,7 @@ Knit your document with and without this last piped code.
 What changes about the output?
 When would this `knitr::kable` code be useful?
 
-**Response**:Adding this code makes it much easier to see the output data table. It makes it look somewhat like an excel data sheet which is easier to read and gain insight from.
+**Response**:The data table is easier to read with this code. 
 
 
 
@@ -257,11 +256,18 @@ Let us see how well your descriptions in the [Median Earnings by Major Category]
 Plot the distribution of the variable `median` earnings of full-time, year-round workers for each `major_category` using the *boxplot* and *jitter* geometries.
 Create a code chunk and name it `major_boxplot`.
 
+```{r major boxplot}
+college_recent_grads %>% 
+  ggplot() +
+  geom_boxplot(aes(x=major_category, y=median))+
+  geom_jitter(aes(x=major_category, y=median))+
+  scale_x_discrete(guide = guide_axis(n.dodge=4))
+```
 
 
 Provide a discussion on how your descriptions in the Median Earnings by Major Category section compares.
 
-**Response**:Career fields with a higher median tend to have a larger range of median salaries. For the most part this visualization agrees with my previous section.
+**Response**:Medians that have a higher earning also have a larger range of median salaries. 
 
 
 ### Multiple Rankings
